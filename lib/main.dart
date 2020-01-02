@@ -74,8 +74,17 @@ class _TfliteHomeState extends State<TfliteHome> {
     }
   }
 
-  selectFromImagePicker() async {
+  selectFromImagePickerGallery() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    setState(() {
+      _busy = true;
+    });
+    predictImage(image);
+  }
+
+  selectFromImagePickerCamera() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
     if (image == null) return;
     setState(() {
       _busy = true;
@@ -135,7 +144,7 @@ class _TfliteHomeState extends State<TfliteHome> {
     double factorX = screen.width;
     double factorY = _imageHeight/_imageWidth * screen.width;
 
-    Color blue = Colors.blue;
+    Color blue = Colors.red;
 
     return _recognitions.map((re){
       return Positioned(
@@ -160,17 +169,140 @@ class _TfliteHomeState extends State<TfliteHome> {
     }).toList();
   }
 
+
+  Widget mainScreen(){
+    return Container (
+      child: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(80.0),
+          ),
+          Text("Please select a Image type",style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
+          Container(
+            padding: EdgeInsets.all(16.0),
+          ),
+          imageType(),
+          Container(
+            padding: EdgeInsets.all(40.0) ,
+          ),
+          Text("Please select a model type",style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
+        Container(
+          padding: EdgeInsets.all(16.0),
+        ),
+          modelType()
+        ],
+      ),
+    );
+  }
+
+  Widget modelType (){
+    return Row(
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.all(40.0),
+        ),
+        RaisedButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(18.0),
+
+              side: BorderSide(color: Colors.blue,width: 2.0)
+          ),
+          color: Colors.white,
+          onPressed: selectFromImagePickerGallery,
+          child: Column(
+            children: <Widget>[
+              Container(padding: EdgeInsets.all(4.0),),
+              Icon(Icons.adjust),
+              Container(padding: EdgeInsets.all(4.0),),
+              Text("YOLO"),
+              Container(padding: EdgeInsets.all(4.0),),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(30.0),
+        ),
+        RaisedButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(18.0),
+
+              side: BorderSide(color: Colors.blue,width: 2.0)
+          ),
+          color: Colors.white,
+          onPressed: selectFromImagePickerCamera,
+          child:Column(
+            children: <Widget>[
+              Container(padding: EdgeInsets.all(4.0),),
+              Icon(Icons.album,),
+              Container(padding: EdgeInsets.all(4.0),),
+              Text("SSD"),
+              Container(padding: EdgeInsets.all(4.0),),
+            ],
+          ),)
+      ],
+    );
+  }
+
+  Widget imageType () {
+    return Row(
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.all(40.0),
+        ),
+        RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(18.0),
+
+            side: BorderSide(color: Colors.blue,width: 2.0)
+          ),
+          color: Colors.white,
+          onPressed: selectFromImagePickerGallery,
+          child: Column(
+            children: <Widget>[
+              Container(padding: EdgeInsets.all(4.0),),
+              Icon(Icons.image),
+              Container(padding: EdgeInsets.all(4.0),),
+              Text("GALLERY"),
+              Container(padding: EdgeInsets.all(4.0),),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(30.0),
+        ),
+        RaisedButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(18.0),
+
+              side: BorderSide(color: Colors.blue,width: 2.0)
+          ),
+          color: Colors.white,
+          onPressed: selectFromImagePickerCamera,
+          child:Column(
+            children: <Widget>[
+              Container(padding: EdgeInsets.all(4.0),),
+              Icon(Icons.camera,),
+              Container(padding: EdgeInsets.all(4.0),),
+              Text("CAMERA"),
+              Container(padding: EdgeInsets.all(4.0),),
+            ],
+          ),)
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
     Size size = MediaQuery.of(context).size;
     List<Widget> stackChildren = [];
 
+
     stackChildren.add(Positioned(
-      top: 0.0,
+      top: 10.0,
       left: 0.0,
       width: size.width,
-      child: _image == null ?  Text("Please select an image"): Image.file(_image),
+      child: _image == null ? mainScreen(): Image.file(_image),
     ));
 
     stackChildren.addAll(renderBoxes(size));
@@ -181,12 +313,7 @@ class _TfliteHomeState extends State<TfliteHome> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tflite"),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.image),
-        tooltip: "Pick Image from Gallery",
-        onPressed: selectFromImagePicker,
+        title: Text("Object Detection"),
       ),
       body: Stack(
         children: stackChildren,
