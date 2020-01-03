@@ -266,6 +266,7 @@ class _TfliteHomeState extends State<TfliteHome> {
               Container(padding: EdgeInsets.all(4.0),),
             ],
           ),
+          splashColor:Colors.amber,
         ),
         Container(
           padding: EdgeInsets.all(30.0),
@@ -286,7 +287,9 @@ class _TfliteHomeState extends State<TfliteHome> {
               Text("CAMERA"),
               Container(padding: EdgeInsets.all(4.0),),
             ],
-          ),)
+          ),
+          splashColor:Colors.amber,
+        ),
       ],
     );
   }
